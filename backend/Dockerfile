@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y \
     npm \
     && docker-php-ext-install pdo_pgsql
 
-# Instalar Composer
+# Instalar Composer desde la imagen oficial de Composer
 COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
 
 # Configuración del directorio de trabajo
@@ -23,10 +23,8 @@ COPY . .
 # Instalar dependencias de PHP
 RUN composer install --no-dev --optimize-autoloader
 
-# Instalar dependencias de Node.js
+# Instalar dependencias de Node.js y compilar assets
 RUN npm install
-
-# Ejecutar compilación de assets (si es necesario)
 RUN npm run build
 
 # Ajustar permisos
@@ -35,6 +33,9 @@ RUN chown -R www-data:www-data /var/www
 
 # Exponer el puerto de PHP-FPM
 EXPOSE 9000
+
+# Iniciar PHP-FPM
+CMD ["php-fpm"]
 
 # Iniciar PHP-FPM
 CMD ["php-fpm"]
