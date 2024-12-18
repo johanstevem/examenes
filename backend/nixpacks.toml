@@ -1,7 +1,7 @@
 [build]
 build = """
   curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-  composer install
+  /usr/local/bin/composer install
   npm install
   npm run build
   php artisan migrate --force
@@ -10,4 +10,5 @@ build = """
   chmod 777 -R bootstrap/cache
   php artisan storage:link
 """
+
 
