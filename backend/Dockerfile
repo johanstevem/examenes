@@ -8,31 +8,23 @@ RUN apt-get update && apt-get install -y \
     curl \
     libzip-dev
 
-# Instalar Composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-
 # Establecer el directorio de trabajo
 WORKDIR /app
 
 # Copiar los archivos del proyecto al contenedor
 COPY . .
 
-# Instalar las dependencias de PHP y NPM
+# Instalar las dependencias de PHP (Composer) y NPM
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 RUN composer install
 RUN npm install
-RUN npm run build
-
-# Ejecutar migraciones y optimizaciones
-RUN php artisan migrate --force
-RUN php artisan optimize
-RUN chmod 777 -R storage/
-RUN chmod 777 -R bootstrap/cache
-RUN php artisan storage:link
 
 # Exponer el puerto si es necesario
 EXPOSE 8080
 
-# Iniciar el servidor Laravel
+# Comando para ejecutar el servidor
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8080"]
+
 CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8080"]
 
 
