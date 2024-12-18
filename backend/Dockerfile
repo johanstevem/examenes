@@ -1,26 +1,29 @@
-# Usar la imagen base de Nixpacks
+# Usamos una imagen base compatible con Ubuntu
 FROM ghcr.io/railwayapp/nixpacks:ubuntu-1731369831
 
-# Establecer el directorio de trabajo
-WORKDIR /app
+# Establecemos el directorio de trabajo
+WORKDIR /app/
 
-# Copiar los archivos del proyecto al contenedor
-COPY . /app/
+# Copiamos los archivos del proyecto
+COPY . /app/.
 
-# Instalar dependencias de Composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+# Instalamos Composer
+RUN apt-get update && apt-get install -y \
+    curl \
+    php-cli \
+    php-mbstring \
+    unzip \
+    && curl -sS https://getcomposer.org/installer | php \
+    && mv composer.phar /usr/local/bin/composer
 
-# Verificar que Composer esté instalado correctamente
-RUN composer --version
+# Ahora, instalamos las dependencias
+RUN composer install && npm i && npm run build && php artisan migrate --force && php artisan optimize && chmod 777 -R storage/ && chmod 777 -R bootstrap/cache && php artisan storage:link
 
-# Instalar dependencias de PHP y Node
-RUN composer install && npm install && npm run build
+# Expone el puerto (si es necesario)
+EXPOSE 8000
 
-# Ejecutar migraciones, optimizar el proyecto y darle permisos a las carpetas necesarias
-RUN php artisan migrate --force && php artisan optimize && chmod 777 -R storage/ && chmod 777 -R bootstrap/cache && php artisan storage:link
-
-# Exponer el puerto 8080
-EXPOSE 8080
+# Inicia el servidor de Laravel (puedes ajustarlo según lo que necesites)
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
 
 # Ejecutar el servidor de Laravel
 CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8080"]
