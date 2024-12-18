@@ -4,11 +4,11 @@ build = """
   # Instalar Composer
   curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-  # Verificar la versión de Composer para asegurar que se ha instalado correctamente
+  # Verificar que Composer se instaló correctamente
   echo "Composer version:"
   /usr/local/bin/composer --version
 
-  # Ejecutar los comandos de construcción
+  # Instalar dependencias de Composer, Node.js y ejecutar los comandos de construcción de Laravel
   /usr/local/bin/composer install
   npm install
   npm run build
@@ -22,4 +22,5 @@ build = """
 [run]
 # Comando para iniciar el servidor de Laravel
 start = "php artisan serve --host=0.0.0.0 --port=8080"
+
 
