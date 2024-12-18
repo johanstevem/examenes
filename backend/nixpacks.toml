@@ -1,18 +1,25 @@
 [build]
-  # Comando para instalar Composer antes de continuar con la construcción
-  build = """
-    curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-    echo "Composer version:" && /usr/local/bin/composer --version
-    /usr/local/bin/composer install
-    npm install
-    npm run build
-    php artisan migrate --force
-    php artisan optimize
-    chmod 777 -R storage/
-    chmod 777 -R bootstrap/cache
-    php artisan storage:link
-  """
+# Comando para instalar Composer antes de continuar con la construcción
+build = """
+  # Instalar Composer
+  curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+  # Verificar la versión de Composer para asegurar que se ha instalado correctamente
+  echo "Composer version:"
+  /usr/local/bin/composer --version
+
+  # Ejecutar los comandos de construcción
+  /usr/local/bin/composer install
+  npm install
+  npm run build
+  php artisan migrate --force
+  php artisan optimize
+  chmod 777 -R storage/
+  chmod 777 -R bootstrap/cache
+  php artisan storage:link
+"""
 
 [run]
-  # Comando para iniciar el servidor
-  start = "php artisan serve --host=0.0.0.0 --port=8080"
+# Comando para iniciar el servidor de Laravel
+start = "php artisan serve --host=0.0.0.0 --port=8080"
+
