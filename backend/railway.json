@@ -1,8 +1,7 @@
 {
   "build": {
     "env": {
-      "NIXPACKS_BUILD_CMD": "curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && apt-get update && apt-get install -y php-cli php-mbstring php-xml php-curl php-zip php-bcmath && composer install && npm install && npm run build && php artisan migrate --force && php artisan optimize && chmod 777 -R storage/ && chmod 777 -R bootstrap/cache && php artisan storage:link"
+      "NIXPACKS_BUILD_CMD": "apt-get update && apt-get install -y php-cli php-mbstring php-xml php-curl php-zip php-bcmath unzip curl git && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && composer install && npm install && npm run build && php artisan migrate --force && php artisan optimize && chmod 777 -R storage/ && chmod 777 -R bootstrap/cache && php artisan storage:link"
     }
   }
 }
-
