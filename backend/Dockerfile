@@ -18,6 +18,9 @@ RUN apt-get update && apt-get install -y \
 # Instalar Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
+# Verificar que Composer esté instalado
+RUN composer --version
+
 # Establecer el directorio de trabajo
 WORKDIR /app
 
@@ -38,4 +41,3 @@ EXPOSE 8080
 
 # Comando de inicio
 CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8080"]
-
