@@ -1,9 +1,8 @@
-
 services:
   app:
     build:
       context: .
-      dockerfile: Dockerfile
+      # No se debe especificar Dockerfile si no lo usas
     container_name: laravel_app
     working_dir: /var/www
     volumes:
@@ -43,4 +42,6 @@ networks:
   laravel:
 
 volumes:
+  dbdata:
+
   dbdata:
