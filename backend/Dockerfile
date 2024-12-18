@@ -1,25 +1,11 @@
-# Usar una imagen base de PHP oficial para Laravel
-FROM php:8.1-cli
+# Usar una imagen base de PHP con Composer preinstalado
+FROM composer:2.2 AS build
 
 # Establecer el directorio de trabajo
 WORKDIR /app/
 
 # Copiar los archivos del proyecto
 COPY . /app/
-
-# Instalar las dependencias necesarias del sistema
-RUN apt-get update && apt-get install -y \
-    curl \
-    php-mbstring \
-    unzip \
-    git
-
-# Instalar Composer
-RUN curl -sS https://getcomposer.org/installer | php
-RUN mv composer.phar /usr/local/bin/composer
-
-# Verificar que Composer se haya instalado correctamente
-RUN composer --version
 
 # Instalar las dependencias de Composer y NPM
 RUN composer install
@@ -35,4 +21,5 @@ EXPOSE 8000
 
 # Iniciar el servidor Laravel
 CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8080"]
+
 
