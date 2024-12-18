@@ -1,10 +1,11 @@
-FROM php:8.2-cli
+# Usar una imagen de Ubuntu como base
+FROM ubuntu:20.04
 
-# Instalar dependencias del sistema
+# Actualizar el sistema e instalar dependencias necesarias
 RUN apt-get update && apt-get install -y \
-    unzip \
-    git \
     curl \
+    git \
+    unzip \
     libpng-dev \
     libjpeg-dev \
     libfreetype6-dev \
@@ -12,22 +13,30 @@ RUN apt-get update && apt-get install -y \
     libxml2-dev \
     zip \
     libzip-dev \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo pdo_mysql gd zip
+    && apt-get clean
 
-# Instalar Composer
+# Instalar PHP y las extensiones necesarias
+RUN apt-get update && apt-get install -y \
+    php8.2-cli \
+    php8.2-fpm \
+    php8.2-mbstring \
+    php8.2-xml \
+    php8.2-zip \
+    php8.2-mysql
+
+# Descargar e instalar Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Verificar que Composer esté instalado
+# Verificar que Composer esté instalado correctamente
 RUN composer --version
 
 # Establecer el directorio de trabajo
 WORKDIR /app
 
-# Copiar el proyecto
+# Copiar el proyecto al contenedor
 COPY . /app
 
-# Instalar dependencias de Laravel
+# Instalar las dependencias de Composer, Node y ejecutar las migraciones
 RUN composer install \
     && npm install \
     && npm run build \
@@ -36,8 +45,8 @@ RUN composer install \
     && chmod -R 777 storage bootstrap/cache \
     && php artisan storage:link
 
-# Exponer el puerto
+# Exponer el puerto 8080
 EXPOSE 8080
 
-# Comando de inicio
+# Ejecutar el servidor de Laravel
 CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8080"]
