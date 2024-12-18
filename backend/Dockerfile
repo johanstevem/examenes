@@ -1,41 +1,40 @@
-FROM php:8.2-fpm
+FROM php:8.2-cli
 
-# Instalar extensiones necesarias para PostgreSQL y otros paquetes necesarios
+# Instalar dependencias del sistema
 RUN apt-get update && apt-get install -y \
-    libpq-dev \
     unzip \
     git \
-    zip \
     curl \
-    nodejs \
-    npm \
-    && docker-php-ext-install pdo_pgsql
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
+    libonig-dev \
+    libxml2-dev \
+    zip \
+    libzip-dev \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install pdo pdo_mysql gd zip
 
-# Instalar Composer desde la imagen oficial de Composer
+# Instalar Composer
 COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
 
-# Configuración del directorio de trabajo
-WORKDIR /var/www
+# Establecer el directorio de trabajo
+WORKDIR /app
 
-# Copiar todos los archivos del proyecto
-COPY . .
+# Copiar el proyecto
+COPY . /app
 
-# Instalar dependencias de PHP
-RUN composer install --no-dev --optimize-autoloader
+# Instalar dependencias de Laravel
+RUN composer install \
+    && npm install \
+    && npm run build \
+    && php artisan migrate --force \
+    && php artisan optimize \
+    && chmod -R 777 storage bootstrap/cache \
+    && php artisan storage:link
 
-# Instalar dependencias de Node.js y compilar assets
-RUN npm install
-RUN npm run build
+# Exponer el puerto
+EXPOSE 8080
 
-# Ajustar permisos
-RUN chmod -R 775 storage bootstrap/cache
-RUN chown -R www-data:www-data /var/www
-
-# Exponer el puerto de PHP-FPM
-EXPOSE 8000
-
-# Iniciar PHP-FPM
-CMD ["php-fpm"]
-
-# Iniciar PHP-FPM
-CMD ["php-fpm"]
+# Comando de inicio
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8080"]
