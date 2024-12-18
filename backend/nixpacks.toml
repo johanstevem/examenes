@@ -1,6 +1,7 @@
 [build]
 build = """
   curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+  echo "Composer version:" && /usr/local/bin/composer --version
   /usr/local/bin/composer install
   npm install
   npm run build
@@ -10,5 +11,6 @@ build = """
   chmod 777 -R bootstrap/cache
   php artisan storage:link
 """
+
 
 
